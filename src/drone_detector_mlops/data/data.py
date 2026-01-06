@@ -1,7 +1,7 @@
 from pathlib import Path
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
-from src.drone_detector_mlops.logger import get_logger
+from drone_detector_mlops.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

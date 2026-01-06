@@ -1,7 +1,7 @@
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 
-from src.drone_detector_mlops.settings import settings
+from drone_detector_mlops.utils.settings import settings
 
 TRAIN_RATIO = 0.70
 VAL_RATIO = 0.15

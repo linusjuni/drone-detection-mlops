@@ -1,16 +1,20 @@
-from torch import nn
+import timm
 import torch
+import torch.nn as nn
 
-class Model(nn.Module):
-    """Just a dummy model to show how to structure your code"""
-    def __init__(self):
+
+class DroneDetectorModel(nn.Module):
+    """Drone vs Bird classifier using TIMM ResNet18."""
+
+    def __init__(self, num_classes: int = 2, pretrained: bool = True):
         super().__init__()
-        self.layer = nn.Linear(1, 1)
+        # Load pretrained ResNet18 from TIMM
+        self.model = timm.create_model("resnet18", pretrained=pretrained, num_classes=num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.layer(x)
+        return self.model(x)
 
-if __name__ == "__main__":
-    model = Model()
-    x = torch.rand(1)
-    print(f"Output shape of model: {model(x).shape}")
+
+def get_model(num_classes: int = 2, pretrained: bool = True) -> DroneDetectorModel:
+    """Factory function to create model."""
+    return DroneDetectorModel(num_classes=num_classes, pretrained=pretrained)
