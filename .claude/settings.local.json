@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git pull:*)",
+      "Bash(gh pr create:*)",
+      "Bash(brew install:*)",
+      "Bash(git push:*)",
+      "Skill(gh-pull-requests)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)"
+    ]
+  }
+}
