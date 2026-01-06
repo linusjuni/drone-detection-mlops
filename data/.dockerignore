@@ -1,0 +1,17 @@
+# Ignore local python environment
+.venv/
+__pycache__/
+*.pyc
+
+# Ignore data (we will mount this instead)
+data/
+models/*
+
+# Ignore git and DVC internals
+.git/
+.dvc/
+.github/
+
+# Ignore notebooks and reports
+notebooks/
+reports/
