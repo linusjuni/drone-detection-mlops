@@ -52,3 +52,6 @@ line-length = 120
 
 [tool.coverage.run]
 omit = ["tests/*"]
+
+[project.scripts]
+train = "drone_detector_mlops.workflows.train:main"
