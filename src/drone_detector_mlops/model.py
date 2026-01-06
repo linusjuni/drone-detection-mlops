@@ -4,7 +4,7 @@ import torch.nn as nn
 
 
 class DroneDetectorModel(nn.Module):
-    """Drone vs Bird classifier using TIMM ResNet18."""
+    """Drone vs Bidfsdfrd classifier usinfffg TIMM ResNet18."""
 
     def __init__(self, num_classes: int = 2, pretrained: bool = True):
         super().__init__()

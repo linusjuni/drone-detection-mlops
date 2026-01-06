@@ -21,7 +21,7 @@ def evaluate_model(
 
     # Per-class metrics
     class_correct = [0, 0]  # [drone, bird]
-    class_total = [0, 0]    # [drone, bird]
+    class_total = [0, 0]  # [drone, bird]
 
     with torch.no_grad():
         for images, labels in dataloader:

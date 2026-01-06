@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     RANDOM_SEED: int = Field(42, env="RANDOM_SEED")
-    
+
     IMAGENET_MEAN: list = Field([0.485, 0.456, 0.406], env="IMAGENET_MEAN")
     IMAGENET_STD: list = Field([0.229, 0.224, 0.225], env="IMAGENET_STD")
 
