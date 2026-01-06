@@ -1,6 +1,6 @@
 from torch.utils.data import Dataset
 
-from drone_detector_mlops.data import MyDataset
+from drone_detector_mlops.data.data import MyDataset
 
 
 def test_my_dataset():
