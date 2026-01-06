@@ -2,8 +2,8 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
-from src.drone_detector_mlops.utils.logger import get_logger
-from src.drone_detector_mlops.model import get_model
+from drone_detector_mlops.utils.logger import get_logger
+from drone_detector_mlops.model import get_model
 
 logger = get_logger(__name__)
 
