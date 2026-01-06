@@ -1,6 +1,9 @@
 from pathlib import Path
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
+from src.drone_detector_mlops.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class DroneVsBirdDataset(Dataset):
@@ -28,9 +31,6 @@ class DroneVsBirdDataset(Dataset):
             image = self.transform(image)
 
         return image, label
-
-    def preprocess(self, output_folder: Path) -> None:
-        """Preprocess the raw data and save it to the output folder."""
 
 
 def get_dataloaders(
@@ -69,5 +69,7 @@ def get_dataloaders(
         shuffle=False,
         num_workers=num_workers,
     )
+
+    logger.success("Dataloaders created successfully")
 
     return train_loader, val_loader, test_loader
