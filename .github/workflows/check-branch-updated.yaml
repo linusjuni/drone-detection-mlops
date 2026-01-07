@@ -11,8 +11,6 @@ on:
 jobs:
   check-uptodate:
     runs-on: ubuntu-latest
-    outputs:
-      up_to_date: ${{ steps.check.outputs.up_to_date }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,12 +21,10 @@ jobs:
         run: git fetch origin ${{ inputs.base }}:refs/remotes/origin/${{ inputs.base }}
 
       - name: Check if branch contains origin/${{ inputs.base }}
-        id: check
         run: |
           if git merge-base --is-ancestor origin/${{ inputs.base }} HEAD; then
-            echo "up_to_date=true" >> $GITHUB_OUTPUT
+            echo "Branch is up to date with origin/${{ inputs.base }}"
           else
             echo "::error::Branch is not up to date with origin/${{ inputs.base }}. Please merge or rebase."
-            echo "up_to_date=false" >> $GITHUB_OUTPUT
             exit 1
           fi
