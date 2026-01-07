@@ -6,8 +6,14 @@ on:
       - main
 
 jobs:
+  check-updated:
+    uses: ./.github/workflows/check-branch-updated.yaml
+    with:
+      base: main
+
   format:
     name: Check code formatting
+    needs: check-updated
     runs-on: ubuntu-latest
 
     steps:
