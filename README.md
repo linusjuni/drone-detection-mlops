@@ -63,3 +63,4 @@ started with Machine Learning Operations (MLOps).
 - [x] Use the `uv run train` command to run the training script
 - [x] Set up pre-commit hooks for linting and formatting
 - [x] Github Actions check to make sure PR branch is up to date with main before running other workflows to minimize runner usage
+- [x] Load environment variables from Github Secrets
