@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: dockerfiles/train.dockerfile
     shm_size: '2gb'
+    env_file: .env
     volumes:
       - ./data:/app/data
       - ./models:/app/models
