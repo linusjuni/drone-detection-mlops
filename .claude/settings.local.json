@@ -8,7 +8,8 @@
       "Skill(gh-pull-requests)",
       "Bash(git fetch:*)",
       "Bash(git merge:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(python -m pytest:*)"
     ]
   }
 }
