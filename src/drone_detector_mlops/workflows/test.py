@@ -1,7 +1,7 @@
-import argparse
 from pathlib import Path
 import torch
 from torch import nn
+import typer
 
 from drone_detector_mlops.data.transforms import test_transform
 from drone_detector_mlops.utils.logger import get_logger
@@ -10,16 +10,18 @@ from drone_detector_mlops.model import get_model
 from drone_detector_mlops.workflows.testing import evaluate_model
 
 logger = get_logger(__name__)
+app = typer.Typer()
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Evaluate drone detector model")
-    parser.add_argument("--checkpoint", type=Path, required=True, help="Path to model checkpoint")
-    parser.add_argument("--data-dir", type=Path, default="data", help="Path to data directory")
-    parser.add_argument("--batch-size", type=int, default=32, help="Batch size for evaluation")
-    args = parser.parse_args()
+@app.command()
+def main(
+    checkpoint: Path = "models/model.pth",
+    data_dir: Path = "data",
+    batch_size: int = 32,
+):
+    data_dir = Path(data_dir)
 
-    logger.info("Starting evaluation", checkpoint=str(args.checkpoint))
+    logger.info("Starting evaluation", checkpoint=str(checkpoint))
 
     # Setup device
     device = torch.device(
@@ -29,14 +31,14 @@ def main():
 
     # Load model
     model = get_model().to(device)
-    model.load_state_dict(torch.load(args.checkpoint, map_location=device))
+    model.load_state_dict(torch.load(checkpoint, map_location=device))
     logger.success("Model loaded successfully")
 
     # Load test data WITH TRANSFORMS
     _, _, test_loader = get_dataloaders(
-        data_dir=args.data_dir,
-        splits_dir=args.data_dir / "splits",
-        batch_size=args.batch_size,
+        data_dir=data_dir,
+        splits_dir=data_dir / "splits",
+        batch_size=batch_size,
         transforms_dict={"test": test_transform},  # ADD THIS
     )
 
@@ -60,4 +62,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    app()
