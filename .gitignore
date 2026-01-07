@@ -3,6 +3,9 @@ docs/site/
 # test cache
 manual_test/
 
+# W&B
+wandb/
+
 # other local dev info
 .vscode/
 .idea/
