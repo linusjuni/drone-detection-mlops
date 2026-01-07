@@ -1,15 +1,18 @@
 name: Unit Tests
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
 
 jobs:
+  check-updated:
+    uses: ./.github/workflows/check-branch-updated.yaml
+    with:
+      base: main
+
   test:
+    needs: check-updated
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:

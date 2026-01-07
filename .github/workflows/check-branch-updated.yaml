@@ -1,0 +1,30 @@
+name: Check Branch is Up to Date with Base Branch
+
+on:
+  workflow_call:
+    inputs:
+      base:
+        required: false
+        type: string
+        default: main
+
+jobs:
+  check-uptodate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base
+        run: git fetch origin ${{ inputs.base }}:refs/remotes/origin/${{ inputs.base }}
+
+      - name: Check if branch contains origin/${{ inputs.base }}
+        run: |
+          if git merge-base --is-ancestor origin/${{ inputs.base }} HEAD; then
+            echo "Branch is up to date with origin/${{ inputs.base }}"
+          else
+            echo "::error::Branch is not up to date with origin/${{ inputs.base }}. Please merge or rebase."
+            exit 1
+          fi
