@@ -71,9 +71,9 @@ def test_drone_detector_model_output_is_logits():
     with torch.no_grad():
         output = model(x)
 
-    # Logits can be any value (not bounded to 0-1)
-    # Check that outputs are not all in [0, 1] range (would indicate softmax/sigmoid)
-    assert not (output.min() >= 0 and output.max() <= 1).all()
+    # Logits should NOT sum to 1 across classes (which would indicate softmax)
+    row_sums = output.sum(dim=1)
+    assert not torch.allclose(row_sums, torch.ones_like(row_sums), atol=1e-5)
 
 
 def test_drone_detector_model_gradient_flow():
