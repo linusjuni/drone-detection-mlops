@@ -12,10 +12,11 @@ jobs:
   check-uptodate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout PR head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Fetch base
         run: git fetch origin ${{ inputs.base }}:refs/remotes/origin/${{ inputs.base }}
