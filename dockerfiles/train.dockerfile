@@ -16,7 +16,6 @@ COPY pyproject.toml uv.lock ./
 RUN uv pip install --system -r pyproject.toml
 
 COPY src/ /app/src/
-COPY README.md /app/
 
 RUN uv pip install --system -e .
 
