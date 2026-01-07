@@ -1,4 +1,4 @@
-name: Check Test is Up to Date with Base Branch
+name: Check Branch is Up to Date with Base Branch
 
 on:
   workflow_call:
