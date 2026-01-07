@@ -9,5 +9,6 @@ pr:
 	claude -p "Create a PR using the gh-pull-requests skill"
 
 test:
+	@echo "Running tests..."
 	@uv run coverage run -m pytest tests/
 	@uv run coverage report -m
