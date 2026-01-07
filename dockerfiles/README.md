@@ -38,8 +38,6 @@ docker-compose run train --epochs 20 --batch-size 64 --lr 0.0001
 └── models/                # Output (volume mounted)
 ```
 
----
-
 ## API Container
 
 (Coming soon)
