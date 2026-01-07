@@ -102,13 +102,13 @@ def main(
 
     # Save model
     output_dir.mkdir(parents=True, exist_ok=True)
-    model_path = output_dir / "model.pth"
+    model_path = output_dir / f"model-{timestamp}.pth"
     torch.save(model.state_dict(), model_path)
     logger.success("Training complete", model_path=str(model_path))
 
     # Log model as W&B artifact
     artifact = wandb.Artifact(
-        name="drone-detector-model",
+        name=f"drone-detector-model-{timestamp}",
         type="model",
         description="ResNet18 model for drone vs bird classification",
     )
