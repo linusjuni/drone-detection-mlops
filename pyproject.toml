@@ -49,6 +49,7 @@ dev = [
 
 [tool.ruff]
 line-length = 120
+fix = true
 
 [tool.coverage.run]
 omit = ["tests/*", "/private/var/*", "/tmp/*"]
