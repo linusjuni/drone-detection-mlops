@@ -25,3 +25,4 @@ ENV PYTHONPATH=/app/src
 ENTRYPOINT ["python", "-m", "drone_detector_mlops.workflows.train"]
 
 CMD ["--data-dir", "data", "--output-dir", "models", "--epochs", "10", "--batch-size", "32", "--lr", "0.001"]
+# EOF
