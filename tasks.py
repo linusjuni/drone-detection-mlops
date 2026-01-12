@@ -40,6 +40,16 @@ def docker_build(ctx: Context, progress: str = "plain") -> None:
     )
 
 
+@task
+def deploy_api(ctx: Context) -> None:
+    """Deploy API to Cloud Run."""
+    ctx.run(
+        "gcloud run services replace cloudrun-api.yaml --region europe-north2",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
 # Documentation commands
 @task
 def build_docs(ctx: Context) -> None:
