@@ -21,3 +21,25 @@ services:
     environment:
       - MODE=cloud
     command: ["--epochs", "10", "--batch-size", "32", "--lr", "0.001"]
+
+  api-local:
+    build:
+      context: .
+      dockerfile: dockerfiles/api.dockerfile
+    env_file: .env
+    environment:
+      - MODE=local
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+
+  api-cloud:
+    build:
+      context: .
+      dockerfile: dockerfiles/api.dockerfile
+    env_file: .env
+    environment:
+      - MODE=cloud
+    ports:
+      - "8000:8000"
