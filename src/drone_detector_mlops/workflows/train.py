@@ -67,7 +67,7 @@ def main(
         data_dir=storage.data_dir,
         splits_dir=storage.splits_dir,
         batch_size=batch_size,
-        num_workers=4,
+        num_workers=0,
         transforms_dict={
             "train": train_transform,
             "val": val_transform,
