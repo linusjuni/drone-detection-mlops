@@ -14,7 +14,12 @@ A drone detection framework with extra MLOps sauce
 
 ## Cloud Infrastructure
 
-**Region:** All infrastructure is in `europe-north2`
+### Region Architecture
+
+We initially started only on `europe-north2`, but found GPU computing to be an issue here, so we expanded to `europe-west4`, thus giving us the setup:
+
+- **Storage (GCS) & Registry:** `europe-north2` (Finland) - Minimal latency for local uploads.
+- **Compute (Vertex AI):** `europe-west4` (Netherlands) - Selected for **NVIDIA T4** availability.
 
 ### Storage Context Manager
 
@@ -38,8 +43,29 @@ gsutil -m rsync -r -d data/bird gs://drone-detection-mlops-data/structured/bird
 gsutil -m rsync -r -d data/splits gs://drone-detection-mlops-data/structured/splits
 ```
 
-### Artifact Registry
+### Cloud Training Pipeline
 
-- **`europe-north2-docker.pkg.dev/drone-detection-mlops/ml-containers`**
-  - Stores Docker images for cloud training
-  - Current image: `train:latest` (training container)
+#### 1. Build the Container
+
+We use Google Cloud Build to offload the construction of the PyTorch/CUDA environment.
+
+```bash
+gcloud builds submit --config cloudbuild.yaml \
+  --substitutions=_TAG_NAME=$(date +%Y%m%d-%H%M%S) .
+```
+
+**Artifact Registry:** `europe-north2-docker.pkg.dev/drone-detection-mlops/ml-containers/train.`
+
+Every build updates the :latest tag used for production runs.
+
+#### 2. Submit to Vertex AI
+
+Training jobs run on dedicated NVIDIA T4 GPUs.
+
+```bash
+uv run -m scripts.submit_training \
+  --machine-type n1-standard-4 \
+  --accelerator-type NVIDIA_TESLA_T4 \
+  --epochs 5 \
+  --batch-size 128
+```
