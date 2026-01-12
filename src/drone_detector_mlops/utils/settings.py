@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 from dotenv import load_dotenv
@@ -20,7 +21,7 @@ class Settings(BaseSettings):
 
     # W&B settings
     WANDB_PROJECT_NAME: str = Field("drone-detector-mlops")
-    WANDB_API_KEY: str = Field(...)
+    WANDB_API_KEY: Optional[str] = Field(default=None)  # Optional for API deployment
 
     # Cloud settings
     MODE: str = Field(default="cloud")
