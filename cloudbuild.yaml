@@ -3,7 +3,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:$TAG_NAME'
+      - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:${_TAG_NAME}'
       - '-t'
       - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:latest'
       - '-f'
@@ -11,11 +11,11 @@ steps:
       - '.'
 
 images:
-  - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:$TAG_NAME'
+  - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:${_TAG_NAME}'
   - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:latest'
 
 substitutions:
-  _TAG_NAME: 'latest' # Default value if none is provided
+  _TAG_NAME: 'latest'
 
 options:
   machineType: 'E2_HIGHCPU_8'
