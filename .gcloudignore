@@ -14,7 +14,7 @@ __pycache__/
 *.so
 .Python
 
-data/
+/data/
 models/
 *.pth
 *.pt
