@@ -29,5 +29,11 @@ class Settings(BaseSettings):
     GCP_PROJECT: str = Field(default="drone-detection-mlops")
     GCP_REGION: str = Field(default="europe-west4")
 
+    # API Configuration
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
+    MAX_UPLOAD_SIZE_MB: int = 10
+    MODEL_FILENAME: str = "model.pth"
+
 
 settings = Settings()
