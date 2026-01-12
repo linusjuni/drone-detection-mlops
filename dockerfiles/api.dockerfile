@@ -20,11 +20,9 @@ ENV PYTHONPATH=/app
 
 RUN uv pip install --system --no-cache .
 
-EXPOSE 8000
+EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
+  CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
 
-ENTRYPOINT ["uvicorn", "drone_detector_mlops.api.main:app"]
-
-CMD ["--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn drone_detector_mlops.api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
