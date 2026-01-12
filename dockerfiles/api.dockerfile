@@ -1,12 +1,30 @@
-FROM ghcr.io/astral-sh/uv:python3.12-alpine AS base
+FROM ghcr.io/astral-sh/uv:0.5.21 AS uv_bin
 
-COPY uv.lock uv.lock
-COPY pyproject.toml pyproject.toml
+FROM python:3.12-slim
 
-RUN uv sync --frozen --no-install-project
+WORKDIR /app
 
-COPY src src/
+COPY --from=uv_bin /uv /bin/uv
 
-RUN uv sync --frozen
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    libglib2.0-0 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["uv", "run", "uvicorn", "src.drone_detector_mlops.api:app", "--host", "0.0.0.0", "--port", "8000"]
+COPY pyproject.toml uv.lock ./
+
+COPY src/drone_detector_mlops/ ./drone_detector_mlops/
+
+ENV PYTHONPATH=/app
+
+RUN uv pip install --system --no-cache .
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
+
+ENTRYPOINT ["uvicorn", "drone_detector_mlops.api.main:app"]
+
+CMD ["--host", "0.0.0.0", "--port", "8000"]
