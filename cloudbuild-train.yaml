@@ -1,0 +1,25 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:${_TAG_NAME}'
+      - '-t'
+      - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:latest'
+      - '-f'
+      - 'dockerfiles/train.dockerfile'
+      - '.'
+
+images:
+  - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:${_TAG_NAME}'
+  - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/train:latest'
+
+substitutions:
+  _TAG_NAME: 'latest'
+
+options:
+  machineType: 'E2_HIGHCPU_8'
+  diskSizeGb: 100
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1200s

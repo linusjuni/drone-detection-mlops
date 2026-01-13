@@ -1,6 +1,6 @@
 FROM ghcr.io/astral-sh/uv:0.5.21 AS uv_bin
 
-FROM python:3.12-slim
+FROM pytorch/pytorch:2.4.0-cuda12.1-cudnn9-runtime
 
 WORKDIR /app
 
@@ -13,15 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY pyproject.toml uv.lock ./
 
-RUN uv pip install --system -r pyproject.toml
+COPY src/drone_detector_mlops/ ./drone_detector_mlops/
 
-COPY src/ /app/src/
+ENV PYTHONPATH=/app
 
-RUN uv pip install --system -e .
+RUN ls -R /app
 
-COPY data/splits/ /app/data/splits/
+RUN uv pip install --system --no-cache .
 
-ENV PYTHONPATH=/app/src
 ENTRYPOINT ["python", "-m", "drone_detector_mlops.workflows.train"]
-
-CMD ["--data-dir", "data", "--output-dir", "models", "--epochs", "10", "--batch-size", "32", "--lr", "0.001"]

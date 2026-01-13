@@ -6,6 +6,7 @@ import time
 
 from drone_detector_mlops.utils.settings import settings
 from drone_detector_mlops.utils.logger import get_logger
+from drone_detector_mlops.utils.storage import get_storage
 from drone_detector_mlops.data.data import get_dataloaders
 from drone_detector_mlops.data.transforms import train_transform, val_transform
 from drone_detector_mlops.workflows.training import (
@@ -21,19 +22,17 @@ timestamp = time.strftime("%Y%m%d-%H%M%S")
 
 @app.command()
 def main(
-    data_dir: Path = "data",
-    output_dir: Path = "models",
     epochs: int = 10,
-    batch_size: int = 16,
+    batch_size: int = 32,
     lr: float = 0.001,
 ):
-    data_dir = Path(data_dir)
-    output_dir = Path(output_dir)
+    storage = get_storage()
 
     logger.info(
         "Starting training",
-        data_dir=data_dir,
-        output_dir=output_dir,
+        mode=settings.MODE,
+        data_dir=str(storage.data_dir),
+        models_dir=str(storage.models_dir),
         epochs=epochs,
         batch_size=batch_size,
         lr=lr,
@@ -59,15 +58,16 @@ def main(
             "architecture": "resnet18",
             "dataset": "drone-vs-bird",
             "device": str(device),
+            "mode": settings.MODE,
         },
     )
     logger.success("W&B initialized", project=wandb.run.project, run_id=wandb.run.id)
 
     train_loader, val_loader, _ = get_dataloaders(
-        data_dir=data_dir,
-        splits_dir=data_dir / "splits",
+        data_dir=storage.data_dir,
+        splits_dir=storage.splits_dir,
         batch_size=batch_size,
-        num_workers=4,
+        num_workers=0,
         transforms_dict={
             "train": train_transform,
             "val": val_transform,
@@ -100,10 +100,8 @@ def main(
             }
         )
 
-    # Save model
-    output_dir.mkdir(parents=True, exist_ok=True)
-    model_path = output_dir / f"model-{timestamp}.pth"
-    torch.save(model.state_dict(), model_path)
+    # Save model using storage context
+    model_path = storage.save_model(model.state_dict(), f"model-{timestamp}.pth")
     logger.success("Training complete", model_path=str(model_path))
 
     # Log model as W&B artifact
@@ -112,7 +110,13 @@ def main(
         type="model",
         description="ResNet18 model for drone vs bird classification",
     )
-    artifact.add_file(str(model_path))
+
+    # Handle both local Path and GCS string
+    if isinstance(model_path, Path):
+        artifact.add_file(str(model_path))
+    else:
+        artifact.add_reference(model_path, name="model.pth")
+
     wandb.log_artifact(artifact)
     logger.success("Model logged to W&B")
 

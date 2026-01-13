@@ -194,7 +194,7 @@ def test_get_dataloaders_returns_three_loaders(tmp_path):
             data_dir=data_dir,
             splits_dir=splits_dir,
             batch_size=2,
-            num_workers=0,  # Use 0 for testing
+            num_workers=0,
         )
 
         assert train_loader is not None

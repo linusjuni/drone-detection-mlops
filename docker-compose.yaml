@@ -1,11 +1,23 @@
 services:
-  train:
+  train-local:
     build:
       context: .
       dockerfile: dockerfiles/train.dockerfile
     shm_size: '2gb'
     env_file: .env
+    environment:
+      - MODE=local
     volumes:
       - ./data:/app/data
       - ./models:/app/models
+    command: ["--epochs", "10", "--batch-size", "32", "--lr", "0.001"]
+
+  train-cloud:
+    build:
+      context: .
+      dockerfile: dockerfiles/train.dockerfile
+    shm_size: '2gb'
+    env_file: .env
+    environment:
+      - MODE=cloud
     command: ["--epochs", "10", "--batch-size", "32", "--lr", "0.001"]
