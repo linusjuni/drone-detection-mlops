@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     WANDB_API_KEY: Optional[str] = Field(default=None)  # Optional for API deployment
 
     # Cloud settings
-    MODE: str = Field(default="cloud")
+    MODE: str = Field(default="cloud")  # "local" or "cloud"
     GCS_DATA_PATH: str = Field(default="gs://drone-detection-mlops-data/structured")
     GCS_MODELS_BUCKET: str = Field(default="gs://drone-detection-mlops-models")
     GCP_PROJECT: str = Field(default="drone-detection-mlops")
