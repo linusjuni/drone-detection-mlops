@@ -150,6 +150,7 @@ class StorageContext:
             model: PyTorch model to convert
             output_path: Path where ONNX model will be saved
         """
+        model = model.cpu()
         model.eval()
 
         # Create dummy input (batch_size=1, channels=3, height=224, width=224)
@@ -182,6 +183,26 @@ class StorageContext:
             fs = gcsfs.GCSFileSystem()
             with fs.open(model_path, "rb") as f:
                 return torch.load(f, map_location="cpu")
+
+    def load_onnx_path(self, filename: str = "model-latest.onnx") -> Union[Path, str]:
+        """Load ONNX model path from storage (local or GCS)."""
+        if self.mode == "local":
+            model_path = self.models_dir / filename
+            if not model_path.exists():
+                raise FileNotFoundError(f"ONNX model not found: {model_path}")
+            return model_path
+        else:  # cloud mode
+            # Download from GCS to temp location
+            model_path = f"{self.models_dir}/{filename}"
+            fs = gcsfs.GCSFileSystem()
+
+            # Save to temp file
+            temp_path = Path(tempfile.gettempdir()) / filename
+            with fs.open(model_path, "rb") as f_in:
+                with open(temp_path, "wb") as f_out:
+                    f_out.write(f_in.read())
+
+        return temp_path
 
 
 def get_storage() -> StorageContext:
