@@ -150,6 +150,7 @@ class StorageContext:
             model: PyTorch model to convert
             output_path: Path where ONNX model will be saved
         """
+        # Ensure model is on CPU and in eval mode
         model = model.cpu()
         model.eval()
 
@@ -157,21 +158,27 @@ class StorageContext:
         dummy_input = torch.randn(1, 3, 224, 224)
 
         # Export to ONNX
-        torch.onnx.export(
-            model,
-            dummy_input,
-            str(output_path),
-            export_params=True,
-            opset_version=21,  # Newest stable opset
-            do_constant_folding=True,
-            input_names=["image"],
-            output_names=["logits"],
-            dynamic_axes={"image": {0: "batch_size"}, "logits": {0: "batch_size"}},
-        )
+        with torch.no_grad():
+            torch.onnx.export(
+                model,
+                dummy_input,
+                str(output_path),
+                export_params=True,
+                opset_version=21,
+                do_constant_folding=True,
+                input_names=["image"],
+                output_names=["logits"],
+                dynamic_axes={"image": {0: "batch_size"}, "logits": {0: "batch_size"}},
+                verbose=False,
+            )
 
         # Validate ONNX model
         onnx_model = onnx.load(str(output_path))
         onnx.checker.check_model(onnx_model)
+
+        # Log model size for verification
+        file_size_mb = Path(output_path).stat().st_size / (1024 * 1024)
+        logger.info(f"ONNX model size: {file_size_mb:.2f} MB")
 
     def load_state_dict(self, filename: str):
         """Load model state dict from storage (local or GCS)."""
