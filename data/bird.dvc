@@ -1,6 +1,6 @@
 outs:
-- md5: 42ec00552f2204c8679b4dde90458e83.dir
-  size: 32445186
-  nfiles: 1607
+- md5: 3305eb8c16e15d84176658c414a0d5e7.dir
+  size: 2659892
+  nfiles: 400
   hash: md5
   path: bird

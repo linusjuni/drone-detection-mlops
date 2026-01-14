@@ -1,6 +1,6 @@
 outs:
-- md5: 07d01d3c669a487e0c3a95806db48659.dir
-  size: 1687830099
-  nfiles: 2499
+- md5: ea769717941e6af87ff7f9c33a7ddcdf.dir
+  size: 69202810
+  nfiles: 428
   hash: md5
   path: drone
