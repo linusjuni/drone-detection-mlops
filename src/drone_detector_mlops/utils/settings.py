@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     MAX_UPLOAD_SIZE_MB: int = 10
     MODEL_FILENAME: str = "model-latest.onnx"
+    API_CORS_ORIGINS: list[str] = Field(default=["*"], description="Allowed CORS origins for API requests")
 
 
 settings = Settings()
