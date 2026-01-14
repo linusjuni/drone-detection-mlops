@@ -82,6 +82,29 @@ def cloud_build_all(ctx: Context) -> None:
 
 
 @task
+def cloud_train(
+    ctx: Context,
+    epochs: int = 10,
+    batch_size: int = 128,
+    lr: float = 0.001,
+) -> None:
+    """Submit training job to Vertex AI (n1-standard-4 + T4 GPU)."""
+    cmd = (
+        f"uv run -m scripts.submit_training "
+        f"--epochs {epochs} "
+        f"--batch-size {batch_size} "
+        f"--lr {lr} "
+        f"--machine-type n1-standard-4 "
+        f"--accelerator-type NVIDIA_TESLA_T4 "
+        f"--accelerator-count 1 "
+        f"--image-tag latest "
+        f"--yes"
+    )
+
+    ctx.run(cmd, echo=True, pty=not WINDOWS)
+
+
+@task
 def deploy_api(ctx: Context) -> None:
     """Deploy API to Cloud Run."""
     ctx.run(
