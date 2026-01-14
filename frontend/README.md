@@ -1,38 +1,40 @@
-# sv
+# Drone Detector Frontend
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+SvelteKit frontend for bird vs drone classification.
 
-## Creating a project
+## Quick Start
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+```bash
+npm install
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+Open `http://localhost:5173` and upload an image to get predictions!
 
-To create a production version of your app:
+## Configuration
 
-```sh
-npm run build
+The frontend connects to the production API by default. Configure in `.env`:
+
+```bash
+# Production API
+PUBLIC_API_URL=https://drone-detector-api-66108710596.europe-north2.run.app
 ```
 
-You can preview the production build with `npm run preview`.
+## Project Structure
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```plaintext
+src/
+├── routes/
+│   ├── +page.svelte      # Main UI with image upload
+│   ├── +layout.svelte    # App layout
+│   ├── api.ts            # API client (predictImage, checkHealth)
+│   └── layout.css        # Tailwind + Red Bull theme
+└── app.html              # HTML template
+```
+
+## API Integration
+
+The `api.ts` module provides:
+
+- `predictImage(file: File)` - Upload image and get prediction
+- `checkHealth()` - Check API status
