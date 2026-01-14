@@ -54,7 +54,9 @@ def build_api(ctx: Context) -> None:
 def deploy_api(ctx: Context) -> None:
     """Deploy API to Cloud Run."""
     ctx.run(
-        "gcloud run services replace cloudrun-api.yaml --region europe-north2",
+        "gcloud run services update drone-detector-api "
+        "--region europe-north2 "
+        "--image europe-north2-docker.pkg.dev/drone-detection-mlops/ml-containers/api:latest",
         echo=True,
         pty=not WINDOWS,
     )
