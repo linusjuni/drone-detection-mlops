@@ -19,11 +19,12 @@ services:
         shm_size: '2gb'
         env_file: .env
         environment:
-          - MODE=local
+            - MODE=local
         volumes:
-          - ./data:/app/data
-          - ./models:/app/models
-        command: ["--multirun", "hyper_parameters.lr=0.001,0.01", "hyper_parameters.batch_size=16,32"]
+            - ./data:/app/data
+            - ./models:/app/models
+            - ./outputs:/app/outputs
+        command: [ "--multirun", "+sweep=basic" ]
 
       train-cloud:
         build:

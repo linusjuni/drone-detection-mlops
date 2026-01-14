@@ -14,13 +14,12 @@ app = typer.Typer()
 
 @app.command()
 def main(
-    epochs: int = typer.Option(10, help="Number of training epochs"),
-    batch_size: int = typer.Option(32, help="Batch size"),
-    lr: float = typer.Option(0.001, help="Learning rate"),
     machine_type: str = typer.Option("n1-standard-4", help="Machine type"),
     accelerator_type: str = typer.Option("NVIDIA_TESLA_T4", help="GPU type (or 'None' for CPU)"),
     accelerator_count: int = typer.Option(1, help="Number of GPUs"),
     image_tag: str = typer.Option("latest", help="Docker image tag"),
+    sweep: bool = typer.Option(False, help="Run Optuna sweep"),
+    hydra_overrides: str = typer.Option("", help="Hydra overrides (comma-separated)"),
 ):
     """Submit a training job to Vertex AI."""
 
@@ -40,14 +39,15 @@ def main(
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     display_name = f"drone-detector-{timestamp}"
 
-    container_args = [
-        "--epochs",
-        str(epochs),
-        "--batch-size",
-        str(batch_size),
-        "--lr",
-        str(lr),
-    ]
+    # Build container args based on options
+    container_args = []
+    if sweep:
+        container_args.extend(["--multirun", "+sweep=basic"])
+    elif hydra_overrides:
+        container_args.extend(hydra_overrides.split(","))
+    else:
+        # Default: use param_1 config
+        container_args.append("hyper_parameters=param_1")
 
     env_vars = {
         "MODE": "cloud",
@@ -65,9 +65,8 @@ def main(
         image=IMAGE_URI,
         machine_type=machine_type,
         accelerator=accelerator_type if accelerator_type != "None" else "CPU",
-        epochs=epochs,
-        batch_size=batch_size,
-        lr=lr,
+        sweep=sweep,
+        container_args=container_args,
     )
 
     if not typer.confirm("Submit this job?", default=True):
