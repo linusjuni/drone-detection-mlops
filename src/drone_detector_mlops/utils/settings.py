@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
     MAX_UPLOAD_SIZE_MB: int = 10
-    MODEL_FILENAME: str = "model-latest.pth"
+    MODEL_FILENAME: str = "model-latest.onnx"
 
 
 settings = Settings()
