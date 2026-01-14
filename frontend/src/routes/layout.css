@@ -1,0 +1,12 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@theme {
+	--color-redbull-red: #db0032;
+	--color-redbull-red-dark: #a80027;
+	--color-redbull-navy: #0c1c2c;
+	--color-redbull-navy-light: #1a2d42;
+	--color-redbull-gold: #f5c51a;
+	--color-redbull-silver: #c0c0c0;
+}
