@@ -1,4 +1,3 @@
-from pathlib import Path
 import torch
 import typer
 import wandb
@@ -76,13 +75,17 @@ def main(
     )
 
     # Training loop
+    best_val_loss = float("inf")
     for epoch in range(epochs):
+        logger.info("Starting epoch", epoch=epoch + 1, total=epochs)
+
         train_metrics = train_epoch(model, train_loader, optimizer, criterion, device)
         val_metrics = validate_epoch(model, val_loader, criterion, device)
 
         # Log to console
         logger.info(
-            f"Epoch {epoch + 1}/{epochs}",
+            "Epoch completed",
+            epoch=epoch + 1,
             train_loss=train_metrics["loss"],
             train_acc=train_metrics["accuracy"],
             val_loss=val_metrics["loss"],
@@ -93,34 +96,43 @@ def main(
         wandb.log(
             {
                 "epoch": epoch + 1,
-                "train/loss": train_metrics["loss"],
-                "train/accuracy": train_metrics["accuracy"],
-                "val/loss": val_metrics["loss"],
-                "val/accuracy": val_metrics["accuracy"],
+                "train_loss": train_metrics["loss"],
+                "train_acc": train_metrics["accuracy"],
+                "val_loss": val_metrics["loss"],
+                "val_acc": val_metrics["accuracy"],
             }
         )
 
-    # Save model using storage context
-    model_path = storage.save_model(model.state_dict(), f"model-{timestamp}.pth")
-    logger.success("Training complete", model_path=str(model_path))
+        # Save best model (only if validation loss improved)
+        if val_metrics["loss"] < best_val_loss:
+            best_val_loss = val_metrics["loss"]
+            model_filename = f"model-{timestamp}"
 
-    # Log model as W&B artifact
-    artifact = wandb.Artifact(
-        name=f"drone-detector-model-{timestamp}",
-        type="model",
-        description="ResNet18 model for drone vs bird classification",
-    )
+            model_path = storage.save_model(model, model_filename)
+            logger.success("Best model saved", path=str(model_path), val_loss=best_val_loss)
 
-    # Handle both local Path and GCS string
-    if isinstance(model_path, Path):
-        artifact.add_file(str(model_path))
-    else:
-        artifact.add_reference(model_path, name="model.pth")
+            # Log model artifacts to W&B
+            artifact = wandb.Artifact(
+                name=f"model-{timestamp}",
+                type="model",
+                description=f"ResNet18 drone detector (val_loss={best_val_loss:.4f})",
+            )
 
-    wandb.log_artifact(artifact)
-    logger.success("Model logged to W&B")
+            # Add both PyTorch and ONNX models
+            if storage.mode == "local":
+                artifact.add_file(str(model_path))  # .pth file
+                artifact.add_file(str(model_path).replace(".pth", ".onnx"))  # .onnx file
+                artifact.add_file("models/model-latest.pth")
+                artifact.add_file("models/model-latest.onnx")
+            else:
+                # For cloud mode, just log the GCS paths
+                artifact.add_reference(str(model_path))
+                artifact.add_reference(str(model_path).replace(".pth", ".onnx"))
+
+            wandb.log_artifact(artifact)
 
     wandb.finish()
+    logger.success("Training completed", best_val_loss=best_val_loss)
 
 
 if __name__ == "__main__":
