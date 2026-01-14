@@ -58,7 +58,7 @@ def docker_build_all(ctx: Context, progress: str = "plain") -> None:
 def cloud_build_train(ctx: Context) -> None:
     """Build training image using Google Cloud Build."""
     ctx.run(
-        "gcloud builds submit --config cloudbuild-train.yaml",
+        "gcloud builds submit --config cloud/cloudbuild-train.yaml",
         echo=True,
         pty=not WINDOWS,
     )
@@ -68,7 +68,7 @@ def cloud_build_train(ctx: Context) -> None:
 def cloud_build_api(ctx: Context) -> None:
     """Build API image using Google Cloud Build."""
     ctx.run(
-        "gcloud builds submit --config cloudbuild-api.yaml",
+        "gcloud builds submit --config cloud/cloudbuild-api.yaml",
         echo=True,
         pty=not WINDOWS,
     )
