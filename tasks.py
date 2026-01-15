@@ -69,7 +69,7 @@ def docker_build_all(ctx: Context, progress: str = "plain") -> None:
 def cloud_build_train(ctx: Context) -> None:
     """Build training image using Google Cloud Build."""
     ctx.run(
-        "gcloud builds submit --config cloud/cloudbuild-train.yaml",
+        "gcloud builds submit --config cloud/cloudbuild-train.yaml --ignore-file cloud/ignore_configs/.gcloudignore-train",
         echo=True,
         pty=not WINDOWS,
     )
@@ -79,7 +79,7 @@ def cloud_build_train(ctx: Context) -> None:
 def cloud_build_api(ctx: Context) -> None:
     """Build API image using Google Cloud Build."""
     ctx.run(
-        "gcloud builds submit --config cloud/cloudbuild-api.yaml",
+        "gcloud builds submit --config cloud/cloudbuild-api.yaml --ignore-file cloud/ignore_configs/.gcloudignore-api",
         echo=True,
         pty=not WINDOWS,
     )
@@ -89,7 +89,7 @@ def cloud_build_api(ctx: Context) -> None:
 def cloud_build_frontend(ctx: Context) -> None:
     """Build frontend image using Google Cloud Build."""
     ctx.run(
-        "gcloud builds submit --config cloud/cloudbuild-frontend.yaml",
+        "gcloud builds submit --config cloud/cloudbuild-frontend.yaml --ignore-file cloud/ignore_configs/.gcloudignore-frontend",
         echo=True,
         pty=not WINDOWS,
     )
