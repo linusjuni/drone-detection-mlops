@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 timestamp = time.strftime("%Y%m%d-%H%M%S")
 
 
-@hydra.main(version_base=None, config_path="../../../configs", config_name="config")
+@hydra.main(version_base=None, config_path="/app/configs", config_name="config")
 def main(cfg: DictConfig) -> float:
     """Run training with Hydra config."""
     logger.info("Training config:\n" + OmegaConf.to_yaml(cfg))
@@ -67,7 +67,7 @@ def main(cfg: DictConfig) -> float:
         data_dir=storage.data_dir,
         splits_dir=storage.splits_dir,
         batch_size=batch_size,
-        num_workers=0,
+        num_workers=4,
         transforms_dict={
             "train": train_transform,
             "val": val_transform,
