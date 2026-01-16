@@ -1,0 +1,14 @@
+# Ignore everything
+*
+
+# Except frontend source
+!frontend/
+!frontend/**
+
+# Ignore frontend specific files
+frontend/node_modules/
+frontend/.env
+
+# Except dockerfile
+!dockerfiles/
+!dockerfiles/frontend.dockerfile

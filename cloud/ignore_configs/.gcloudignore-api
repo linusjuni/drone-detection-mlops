@@ -1,0 +1,15 @@
+# Ignore everything
+*
+
+# Except Python package files
+!pyproject.toml
+!uv.lock
+
+# Except source code
+!src/
+!src/drone_detector_mlops/
+!src/drone_detector_mlops/**
+
+# Except dockerfile
+!dockerfiles/
+!dockerfiles/api.dockerfile

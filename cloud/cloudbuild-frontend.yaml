@@ -1,0 +1,26 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'PUBLIC_API_URL=https://drone-detector-api-66108710596.europe-north2.run.app'
+      - '-t'
+      - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/frontend:${_TAG_NAME}'
+      - '-t'
+      - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/frontend:latest'
+      - '-f'
+      - 'dockerfiles/frontend.dockerfile'
+      - '.'
+
+images:
+  - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/frontend:${_TAG_NAME}'
+  - 'europe-north2-docker.pkg.dev/$PROJECT_ID/ml-containers/frontend:latest'
+
+substitutions:
+  _TAG_NAME: 'latest'
+
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 600s
