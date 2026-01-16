@@ -19,25 +19,29 @@ class StorageContext:
         self.mode = mode
         self._gcs_client = None
 
+    def _gcs_to_mount_path(self, gcs_path: str) -> Path:
+        """Convert gs://bucket/path to /gcs/bucket/path for Vertex AI's gcsfuse mount."""
+        return Path(gcs_path.replace("gs://", "/gcs/"))
+
     @property
     def data_dir(self) -> Union[Path, str]:
-        """Returns data directory path (local or GCS)."""
+        """Returns data directory path (local or GCS mount)."""
         if self.mode == "cloud":
-            return settings.GCS_DATA_PATH
+            return self._gcs_to_mount_path(settings.GCS_DATA_PATH)
         return Path("data")
 
     @property
     def splits_dir(self) -> Union[Path, str]:
-        """Returns splits directory path (local or GCS)."""
+        """Returns splits directory path (local or GCS mount)."""
         if self.mode == "cloud":
-            return f"{settings.GCS_DATA_PATH}/splits"
+            return self._gcs_to_mount_path(f"{settings.GCS_DATA_PATH}/splits")
         return Path("data/splits")
 
     @property
     def models_dir(self) -> Union[Path, str]:
-        """Returns models directory path (local or GCS)."""
+        """Returns models directory path (local or GCS mount)."""
         if self.mode == "cloud":
-            return f"{settings.GCS_MODELS_BUCKET}/checkpoints"
+            return self._gcs_to_mount_path(f"{settings.GCS_MODELS_BUCKET}/checkpoints")
         return Path("models")
 
     @property
