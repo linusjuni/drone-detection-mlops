@@ -22,6 +22,11 @@ jobs:
     - name: Install dev dependencies
       run: uv sync --group dev
 
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
     - name: Pull data
       run: |
         uv run dvc pull --no-run-cache
