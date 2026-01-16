@@ -1,20 +1,44 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from PIL import Image
 import io
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
-from drone_detector_mlops.api.inference import predict_image, load_model_singleton
-from drone_detector_mlops.api.schemas import PredictionResponse, HealthResponse, InfoResponse
-from drone_detector_mlops.utils.settings import settings
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from PIL import Image
+
+from drone_detector_mlops.api.inference import load_model_singleton, predict_image
+from drone_detector_mlops.api.schemas import HealthResponse, InfoResponse, PredictionResponse
 from drone_detector_mlops.utils.logger import get_logger
+from drone_detector_mlops.utils.settings import settings
 
 logger = get_logger(__name__)
+
+# Track startup time for uptime
+startup_time: datetime | None = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle startup and shutdown events."""
+    global startup_time
+
+    # Startup
+    logger.info("API starting up")
+    load_model_singleton()
+    startup_time = datetime.now(timezone.utc)
+    logger.success("API ready")
+
+    yield
+
+    # Shutdown
+    logger.info("API shutting down")
+
 
 app = FastAPI(
     title="Drone Detector API",
     description="Drone vs Bird classification API",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Add CORS middleware
@@ -25,17 +49,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Track startup time for uptime
-startup_time = datetime.now(timezone.utc)
-
-
-@app.on_event("startup")
-async def startup_event():
-    """Load model on startup."""
-    logger.info("API starting up")
-    load_model_singleton()
-    logger.success("API ready")
 
 
 @app.get("/health", response_model=HealthResponse)
