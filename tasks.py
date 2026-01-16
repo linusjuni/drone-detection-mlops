@@ -128,12 +128,9 @@ def cloud_train(
 
 @task
 def deploy_api(ctx: Context) -> None:
-    """Deploy API to Cloud Run."""
+    """Deploy API to Cloud Run with Prometheus sidecar."""
     ctx.run(
-        "gcloud run services update drone-detector-api "
-        "--region europe-north2 "
-        "--min-instances 1"
-        "--image europe-north2-docker.pkg.dev/drone-detection-mlops/ml-containers/api:latest",
+        "gcloud run services replace cloud/cloudrun-api.yaml --region europe-north2",
         echo=True,
         pty=not WINDOWS,
     )

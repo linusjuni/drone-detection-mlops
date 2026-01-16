@@ -13,7 +13,10 @@
       "Bash(gh issue view:*)",
       "Bash(git log:*)",
       "Bash(git show:*)",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "WebFetch(domain:docs.cloud.google.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }
