@@ -49,13 +49,7 @@ You are helping the user create a GitHub pull request for the current branch.
 
 # Output
 
-Run this command with the generated title and body:
-
-```bash
-gh pr create --web --title "<conventional commit title>" --body "<filled template>"
-```
-
-Use a heredoc for the body to handle newlines:
+Run this command with the generated title and body. Use a heredoc for the body to handle newlines:
 
 ```bash
 gh pr create --web --title "feat: example title" --body "$(cat <<'EOF'
@@ -74,3 +68,4 @@ EOF
 - Use conventional commit prefixes: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `perf`
 - Be concise - no fluff or excessive detail
 - If the branch name contains a ticket ID (e.g., `COP-123`), **DO NOT** include it in the title
+- Only create ONE pull request
