@@ -1,0 +1,59 @@
+name: Build Docker Images
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/drone_detector_mlops/**'
+      - 'dockerfiles/**'
+      - 'pyproject.toml'
+      - 'uv.lock'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/drone_detector_mlops/**'
+      - 'dockerfiles/**'
+      - 'pyproject.toml'
+      - 'uv.lock'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      train: ${{ steps.filter.outputs.train }}
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            train:
+              - 'src/drone_detector_mlops/**'
+              - 'dockerfiles/train.dockerfile'
+              - 'pyproject.toml'
+              - 'uv.lock'
+            api:
+              - 'src/drone_detector_mlops/**'
+              - 'dockerfiles/api.dockerfile'
+              - 'pyproject.toml'
+              - 'uv.lock'
+
+  build-train:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.train == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build train image
+        run: docker build -f dockerfiles/train.dockerfile -t train:${{ github.sha }} .
+
+  build-api:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build api image
+        run: docker build -f dockerfiles/api.dockerfile -t api:${{ github.sha }} .
