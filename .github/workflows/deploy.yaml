@@ -1,0 +1,106 @@
+name: Build, Train, and Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+env:
+  PROJECT_ID: drone-detection-mlops
+  REGION: europe-north2
+  COMPUTE_REGION: europe-west4
+  ARTIFACT_REGISTRY: europe-north2-docker.pkg.dev/drone-detection-mlops/ml-containers
+
+jobs:
+  build-train-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build train image with Cloud Build
+        run: |
+          gcloud builds submit \
+            --config cloud/cloudbuild-train.yaml \
+            --substitutions=_TAG_NAME=${{ github.sha }} \
+            --ignore-file cloud/ignore_configs/.gcloudignore-train
+
+  train:
+    needs: build-train-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Submit training job to Vertex AI
+        env:
+          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+        run: |
+          uv run python -m scripts.submit_training \
+            --epochs 10 \
+            --batch-size 128 \
+            --lr 0.001 \
+            --machine-type n1-standard-4 \
+            --accelerator-type NVIDIA_TESLA_T4 \
+            --accelerator-count 1 \
+            --image-tag ${{ github.sha }} \
+            --yes
+
+  build-api-image:
+    needs: train
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build API image with Cloud Build
+        run: |
+          gcloud builds submit \
+            --config cloud/cloudbuild-api.yaml \
+            --substitutions=_TAG_NAME=${{ github.sha }} \
+            --ignore-file cloud/ignore_configs/.gcloudignore-api
+
+  deploy-api:
+    needs: build-api-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run services update drone-detector-api \
+            --region ${{ env.REGION }} \
+            --image ${{ env.ARTIFACT_REGISTRY }}/api:${{ github.sha }}
