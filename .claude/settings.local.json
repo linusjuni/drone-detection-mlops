@@ -12,7 +12,8 @@
       "Bash(python -m pytest:*)",
       "Bash(gh issue view:*)",
       "Bash(git log:*)",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "Bash(git diff:*)"
     ]
   }
 }
