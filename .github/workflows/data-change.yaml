@@ -9,6 +9,10 @@ on:
     - '**/*.dvc'
     - '.dvc/**'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   run_data_checker:
     runs-on: ubuntu-latest
