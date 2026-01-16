@@ -56,15 +56,7 @@ jobs:
         env:
           WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
         run: |
-          uv run python -m scripts.submit_training \
-            --epochs 10 \
-            --batch-size 128 \
-            --lr 0.001 \
-            --machine-type n1-standard-4 \
-            --accelerator-type NVIDIA_TESLA_T4 \
-            --accelerator-count 1 \
-            --image-tag ${{ github.sha }} \
-            --yes
+          uv run invoke cloud_train
 
   build-api-image:
     needs: train

@@ -150,8 +150,12 @@ class StorageContext:
             model: PyTorch model to convert
             output_path: Path where ONNX model will be saved
         """
-        # Ensure model is on CPU and in eval mode
-        model = model.cpu()
+        # Remember original device and training mode
+        original_device = next(model.parameters()).device
+        was_training = model.training
+
+        # Ensure model is on CPU and in eval mode for export
+        model.cpu()
         model.eval()
 
         # Create dummy input (batch_size=1, channels=3, height=224, width=224)
@@ -180,6 +184,11 @@ class StorageContext:
         # Log model size for verification
         file_size_mb = Path(output_path).stat().st_size / (1024 * 1024)
         logger.info(f"ONNX model size: {file_size_mb:.2f} MB")
+
+        # Restore model to original device and training mode
+        model.to(original_device)
+        if was_training:
+            model.train()
 
     def load_state_dict(self, filename: str):
         """Load model state dict from storage (local or GCS)."""

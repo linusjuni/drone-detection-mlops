@@ -12,7 +12,10 @@
       "Bash(python -m pytest:*)",
       "Bash(gh issue view:*)",
       "Bash(git log:*)",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "Bash(gcloud logging read:*)",
+      "Bash(gcloud ai custom-jobs describe:*)",
+      "Bash(gcloud artifacts docker tags list:*)"
     ]
   }
 }
