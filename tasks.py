@@ -132,6 +132,7 @@ def deploy_api(ctx: Context) -> None:
     ctx.run(
         "gcloud run services update drone-detector-api "
         "--region europe-north2 "
+        "--min-instances 1"
         "--image europe-north2-docker.pkg.dev/drone-detection-mlops/ml-containers/api:latest",
         echo=True,
         pty=not WINDOWS,
@@ -144,6 +145,7 @@ def deploy_frontend(ctx: Context) -> None:
     ctx.run(
         "gcloud run services update drone-detector-frontend "
         "--region europe-north2 "
+        "--min-instances 1 "
         "--image europe-north2-docker.pkg.dev/drone-detection-mlops/ml-containers/frontend:latest",
         echo=True,
         pty=not WINDOWS,

@@ -71,9 +71,9 @@ async def predict(file: UploadFile = File(...)):
     if size_mb > settings.MAX_UPLOAD_SIZE_MB:
         raise HTTPException(status_code=413, detail=f"File too large. Max size: {settings.MAX_UPLOAD_SIZE_MB}MB")
 
-    # Open image
+    # Open image and convert to RGB (handles RGBA/grayscale)
     try:
-        image = Image.open(io.BytesIO(contents))
+        image = Image.open(io.BytesIO(contents)).convert("RGB")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid image file: {str(e)}")
 

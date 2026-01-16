@@ -9,7 +9,10 @@
       "Bash(git fetch:*)",
       "Bash(git merge:*)",
       "Bash(cat:*)",
-      "Bash(python -m pytest:*)"
+      "Bash(python -m pytest:*)",
+      "Bash(gh issue view:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)"
     ]
   }
 }
