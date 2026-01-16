@@ -1,0 +1,30 @@
+name: DVC Workflow
+
+on:
+  pull_request:
+    branches:
+    - main
+    paths:
+    - '**/*.dvc'
+    - '.dvc/**'
+
+jobs:
+  run_data_checker:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    - name: Set up UV
+      uses: astral-sh/setup-uv@v7
+
+    - name: Install dev dependencies
+      run: uv sync --group dev
+
+    - name: Pull data
+      run: |
+        dvc pull --no-run-cache
+
+    - name: Check data statistics
+      run: |
+        uv run src/drone_detector_mlops/data/stats.py
