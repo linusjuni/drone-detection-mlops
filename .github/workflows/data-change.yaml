@@ -9,6 +9,10 @@ on:
     - '**/*.dvc'
     - '.dvc/**'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   run_data_checker:
     runs-on: ubuntu-latest
@@ -22,18 +26,43 @@ jobs:
     - name: Install dev dependencies
       run: uv sync --group dev
 
-    - name: Pull data
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Get base branch data (before)
       run: |
-        dvc pull --no-run-cache
+        # Checkout base branch to get "before" state
+        git fetch origin ${{ github.base_ref }}
+        git checkout origin/${{ github.base_ref }} -- data/*.dvc data/splits/
+
+        # Pull base branch data
+        uv run dvc pull --no-run-cache
+
+        # Save "before" data and splits
+        mkdir -p before_data before_splits
+        cp -r data/drone data/bird before_data/
+        cp data/splits/*.txt before_splits/
+
+        # Restore PR branch files
+        git checkout HEAD -- data/*.dvc data/splits/
+
+    - name: Pull PR data (after)
+      run: |
+        uv run dvc pull --no-run-cache
 
     - name: Check data statistics & generate report
       run: |
-        uv run python src/drone_detector_mlops/data/stats.py --markdown > data_statistics.md
-        echo '## Sample Images' >> data_statistics.md
-        echo '![](./reports/figures/sample_images.png "Sample images")' >> data_statistics.md
+        uv run python src/drone_detector_mlops/data/stats.py --markdown \
+          --before-data-dir before_data \
+          --before-splits-dir before_splits \
+          > data_statistics.md
+        echo '## Sample Images (Before & New)' >> data_statistics.md
+        echo '![](./reports/figures/sample_images.png "Sample images - before and new")' >> data_statistics.md
         echo '' >> data_statistics.md
-        echo '## Label Distribution' >> data_statistics.md
-        echo '![](./reports/figures/all_splits_distribution.png "Label distribution across splits")' >> data_statistics.md
+        echo '## Label Distribution Comparison' >> data_statistics.md
+        echo '![](./reports/figures/all_splits_distribution.png "Label distribution comparison")' >> data_statistics.md
 
     - name: Setup CML
       uses: iterative/setup-cml@v2
