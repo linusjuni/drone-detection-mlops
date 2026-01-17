@@ -13,3 +13,7 @@
 # Except dockerfile
 !dockerfiles/
 !dockerfiles/train.dockerfile
+
+# Expect configs
+!configs/
+!configs/**

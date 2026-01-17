@@ -13,10 +13,28 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --role="roles/cloudbuild.builds.editor" \
   --quiet
 
-# Storage Admin - allows pushing Docker images to GCR/Artifact Registry
+# Storage Admin - allows pushing Docker images to GCR/Artifact Registry + DVC
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:$SERVICE_ACCOUNT" \
   --role="roles/storage.admin" \
+  --quiet
+
+# Cloud Run Admin - allows deploying services
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$SERVICE_ACCOUNT" \
+  --role="roles/run.admin" \
+  --quiet
+
+# Service Account User - allows acting as other service accounts during deployment
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$SERVICE_ACCOUNT" \
+  --role="roles/iam.serviceAccountUser" \
+  --quiet
+
+# Artifact Registry Writer - for pushing container images (if using Artifact Registry)
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$SERVICE_ACCOUNT" \
+  --role="roles/artifactregistry.writer" \
   --quiet
 
 echo "Service account configured successfully!"

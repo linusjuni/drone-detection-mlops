@@ -13,7 +13,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY pyproject.toml uv.lock ./
 
-COPY src/drone_detector_mlops/ ./drone_detector_mlops/
+COPY src/ ./src/
+
+COPY configs/ ./configs/
 
 ENV PYTHONPATH=/app
 

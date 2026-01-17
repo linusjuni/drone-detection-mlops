@@ -1,0 +1,10 @@
+defaults:
+  - hyper_parameters: param_1
+  - _self_
+
+training:
+  epochs: ${hyper_parameters.epochs}
+  batch_size: ${hyper_parameters.batch_size}
+  lr: ${hyper_parameters.lr}
+
+mode: local
