@@ -65,7 +65,7 @@ jobs:
         echo '![](./reports/figures/all_splits_distribution.png "Label distribution comparison")' >> data_statistics.md
 
     - name: Setup CML
-      uses: iterative/setup-cml@v2
+      uses: iterative/setup-cml@v3
 
     - name: Comment on PR
       env:
